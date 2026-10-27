@@ -39,12 +39,25 @@
       subtitle: 'Akses seluruh materi dan berkas program CERMAT dengan satu ketukan. Pilih folder untuk membukanya di Google Drive.',
       announcement: ''
     },
-    links: [
-      { title: 'Silabus dan Modul', desc: 'Silabus dan modul pembelajaran', url: '', icon: 'materi', access: 'publik', primary: false, hidden: false },
-      { title: 'Lembar Kerja', desc: 'Lembar kerja peserta', url: '', icon: 'template', access: 'publik', primary: false, hidden: false },
-      { title: 'Bahan Tayang', desc: 'Slide dan bahan presentasi', url: '', icon: 'tayang', access: 'publik', primary: false, hidden: false },
-      { title: 'Upload Foto', desc: 'Unggah foto kegiatan', url: '', icon: 'foto', access: 'publik', primary: false, hidden: false },
-      { title: 'Laporan Fasil', desc: 'Laporan kegiatan', url: '', icon: 'laporan', access: 'terbatas', primary: false, hidden: false }
+    groups: [
+      {
+        id: 'fasil', name: 'Fasilitator',
+        links: [
+          { title: 'Silabus dan Modul', desc: 'Silabus dan modul pembelajaran', url: '', icon: 'materi', access: 'publik', primary: false, hidden: false },
+          { title: 'Lembar Kerja', desc: 'Lembar kerja peserta', url: '', icon: 'template', access: 'publik', primary: false, hidden: false },
+          { title: 'Bahan Tayang', desc: 'Slide dan bahan presentasi', url: '', icon: 'tayang', access: 'publik', primary: false, hidden: false },
+          { title: 'Upload Foto', desc: 'Unggah foto kegiatan', url: '', icon: 'foto', access: 'publik', primary: false, hidden: false },
+          { title: 'Laporan Fasil', desc: 'Laporan kegiatan', url: '', icon: 'laporan', access: 'terbatas', primary: false, hidden: false }
+        ]
+      },
+      {
+        id: 'sekolah', name: 'Sekolah Binaan',
+        links: [
+          { title: 'Materi dan Modul', desc: 'Materi dan modul untuk sekolah binaan', url: '', icon: 'materi', access: 'publik', primary: false, hidden: false },
+          { title: 'Lembar Kerja', desc: 'Lembar kerja siswa', url: '', icon: 'template', access: 'publik', primary: false, hidden: false },
+          { title: 'Unggah Foto Kegiatan', desc: 'Dokumentasi kegiatan sekolah', url: '', icon: 'foto', access: 'publik', primary: false, hidden: false }
+        ]
+      }
     ]
   };
 
@@ -59,12 +72,28 @@
   var repo = '';
   var token = '';
   var saving = false;
+  var gi = 0;
 
   /* ---------- util ---------- */
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
   function str(v) { return typeof v === 'string' ? v : ''; }
+
+  function normLinks(arr) {
+    return (Array.isArray(arr) ? arr : []).filter(function (l) { return l && typeof l === 'object' && str(l.title).trim(); })
+      .map(function (l) {
+        return {
+          title: str(l.title).trim(),
+          desc: str(l.desc).trim(),
+          url: str(l.url).trim(),
+          icon: ICON_NAMES.indexOf(l.icon) !== -1 ? l.icon : 'folder',
+          access: l.access === 'terbatas' ? 'terbatas' : 'publik',
+          primary: l.primary === true,
+          hidden: l.hidden === true
+        };
+      });
+  }
 
   function normalize(d) {
     var out = clone(DEFAULT_DATA);
@@ -73,21 +102,47 @@
     ['kicker', 'title', 'subtitle', 'announcement'].forEach(function (k) {
       if (typeof s[k] === 'string') out.site[k] = s[k];
     });
-    if (Array.isArray(d.links)) {
-      out.links = d.links.filter(function (l) { return l && typeof l === 'object' && str(l.title).trim(); })
-        .map(function (l) {
-          return {
-            title: str(l.title).trim(),
-            desc: str(l.desc).trim(),
-            url: str(l.url).trim(),
-            icon: ICON_NAMES.indexOf(l.icon) !== -1 ? l.icon : 'folder',
-            access: l.access === 'terbatas' ? 'terbatas' : 'publik',
-            primary: l.primary === true,
-            hidden: l.hidden === true
-          };
-        });
+    if (Array.isArray(d.groups)) {
+      out.groups.forEach(function (g, i) {
+        var src = d.groups[i];
+        if (src && typeof src === 'object') {
+          if (typeof src.name === 'string' && src.name.trim()) g.name = src.name.trim().slice(0, 30);
+          g.links = normLinks(src.links);
+        }
+      });
+    } else if (Array.isArray(d.links)) {
+      out.groups[0].links = normLinks(d.links);   /* format lama: satu daftar */
     }
     return out;
+  }
+
+  function curLinks() {
+    if (!state.groups[gi]) gi = 0;
+    return state.groups[gi].links;
+  }
+
+  function renderTabs() {
+    var t = $('tabs');
+    if (!t) return;
+    t.textContent = '';
+    state.groups.forEach(function (g, i) {
+      t.appendChild(h('button', {
+        type: 'button', role: 'tab', class: 'tab' + (i === gi ? ' on' : ''),
+        'aria-selected': i === gi ? 'true' : 'false', text: g.name,
+        onclick: function () { selectGroup(i); }
+      }));
+    });
+  }
+
+  function selectGroup(i) {
+    gi = i;
+    try { history.replaceState(null, '', '#' + state.groups[i].id); } catch (e) { /* abaikan */ }
+    renderAll();
+  }
+
+  function readHash() {
+    var id = (location.hash || '').replace('#', '');
+    for (var i = 0; i < state.groups.length; i++) if (state.groups[i].id === id) { gi = i; return; }
   }
 
   function validUrl(u) { return typeof u === 'string' && /^https:\/\/[^\s<>"']+$/i.test(u.trim()); }
@@ -179,7 +234,7 @@
     meta.push(ok ? tag('pub', 'link', 'Tautan terpasang') : tag('hid', null, 'Belum ada tautan'));
     if (l.hidden) meta.push(tag('hid', 'eyeoff', 'Disembunyikan'));
     if (l.primary) meta.push(tag('lim', null, 'Tombol utama'));
-    var n = state.links.length;
+    var n = curLinks().length;
     return h('div', { class: 'card adm' + (l.hidden ? ' off' : '') }, [
       h('div', { class: 'chipicon' }, [ic(l.icon, 22)]),
       h('div', { class: 'txt' }, [
@@ -189,7 +244,7 @@
       h('div', { class: 'ctl' }, [
         ctlBtn('up', 'Naikkan', function () { move(i, -1); }, i === 0),
         ctlBtn('down', 'Turunkan', function () { move(i, 1); }, i === n - 1),
-        ctlBtn(l.hidden ? 'eye' : 'eyeoff', l.hidden ? 'Tampilkan' : 'Sembunyikan', function () { state.links[i].hidden = !state.links[i].hidden; changed(); }),
+        ctlBtn(l.hidden ? 'eye' : 'eyeoff', l.hidden ? 'Tampilkan' : 'Sembunyikan', function () { curLinks()[i].hidden = !curLinks()[i].hidden; changed(); }),
         h('button', { type: 'button', class: 'ib main', 'aria-label': 'Ubah ' + l.title, title: 'Ubah tautan', onclick: function () { editLink(i); } }, [ic('edit', 17, 2), h('span', { text: 'Ubah' })])
       ])
     ]);
@@ -198,7 +253,7 @@
   function renderList() {
     var list = $('list'), shown = 0;
     list.textContent = '';
-    state.links.forEach(function (l, i) {
+    curLinks().forEach(function (l, i) {
       if (admin) { list.appendChild(adminCard(l, i)); shown++; return; }
       if (l.hidden) return;
       shown++;
@@ -230,6 +285,7 @@
 
   function renderAll() {
     renderSite();
+    renderTabs();
     renderList();
     renderBar();
   }
@@ -328,14 +384,16 @@
   }
 
   function serialize() {
-    return JSON.stringify({ site: state.site, links: state.links }, null, 2) + '\n';
+    return JSON.stringify({ site: state.site, groups: state.groups }, null, 2) + '\n';
   }
 
   function save() {
     if (saving) return;
-    for (var i = 0; i < state.links.length; i++) {
-      var u = state.links[i].url;
-      if (u && !validUrl(u)) { toast('Tautan "' + state.links[i].title + '" tidak valid. Harus diawali https://', true); return; }
+    for (var g = 0; g < state.groups.length; g++) {
+      for (var i = 0; i < state.groups[g].links.length; i++) {
+        var u = state.groups[g].links[i].url;
+        if (u && !validUrl(u)) { toast('Tautan "' + state.groups[g].links[i].title + '" (' + state.groups[g].name + ') tidak valid. Harus diawali https://', true); return; }
+      }
     }
     saving = true;
     renderBar();
@@ -453,7 +511,7 @@
   }
 
   function editLink(i) {
-    var l = state.links[i];
+    var l = curLinks()[i];
     var inName = h('input', { type: 'text', value: l.title, maxlength: '60' });
     var inDesc = h('input', { type: 'text', value: l.desc, maxlength: '100' });
     var inUrl = h('input', { type: 'url', value: l.url, placeholder: 'https://drive.google.com/drive/folders/...', autocapitalize: 'none', spellcheck: 'false' });
@@ -469,7 +527,7 @@
     var armed = false;
     del.addEventListener('click', function () {
       if (!armed) { armed = true; del.textContent = 'Yakin hapus?'; return; }
-      state.links.splice(i, 1);
+      curLinks().splice(i, 1);
       changed();
       d.close();
     });
@@ -487,7 +545,7 @@
       var name = inName.value.trim(), url = inUrl.value.trim();
       if (!name) { showErr(err, 'Nama tombol tidak boleh kosong.'); return; }
       if (url && !validUrl(url)) { showErr(err, 'Tautan harus diawali https:// dan tanpa spasi.'); return; }
-      state.links[i] = {
+      curLinks()[i] = {
         title: name, desc: inDesc.value.trim(), url: url, icon: inIcon.value,
         access: inAcc.value, primary: inPri.checked, hidden: inHid.checked
       };
@@ -498,9 +556,9 @@
   }
 
   function addLink() {
-    state.links.push({ title: 'Folder baru', desc: '', url: '', icon: 'folder', access: 'publik', primary: false, hidden: false });
+    curLinks().push({ title: 'Folder baru', desc: '', url: '', icon: 'folder', access: 'publik', primary: false, hidden: false });
     changed();
-    editLink(state.links.length - 1);
+    editLink(curLinks().length - 1);
   }
 
   function settingsDialog() {
@@ -509,11 +567,15 @@
     var b = h('input', { type: 'text', value: s.title, maxlength: '60' });
     var c = h('textarea', { rows: '3', maxlength: '300', text: s.subtitle });
     var e = h('textarea', { rows: '3', maxlength: '300', placeholder: 'Kosongkan bila tidak ada pengumuman', text: s.announcement });
+    var g1 = h('input', { type: 'text', value: state.groups[0].name, maxlength: '30' });
+    var g2 = h('input', { type: 'text', value: state.groups[1].name, maxlength: '30' });
     var d = openDialog('Pengaturan halaman', [
       field('Teks pita atas', a),
       field('Judul', b),
       field('Kalimat pengantar', c),
-      field('Pengumuman', e, 'Muncul di atas daftar folder.')
+      field('Pengumuman', e, 'Muncul di atas daftar folder.'),
+      field('Nama tab pertama', g1),
+      field('Nama tab kedua', g2)
     ], [btn('Batal', 'ghost', { onclick: function () { d.close(); } }), btn('Simpan', 'pri', { type: 'submit' })]);
     d.form.addEventListener('submit', function (ev) {
       ev.preventDefault();
@@ -523,6 +585,8 @@
         subtitle: c.value.trim() || DEFAULT_DATA.site.subtitle,
         announcement: e.value.trim()
       };
+      state.groups[0].name = g1.value.trim() || DEFAULT_DATA.groups[0].name;
+      state.groups[1].name = g2.value.trim() || DEFAULT_DATA.groups[1].name;
       changed();
       d.close();
     });
@@ -550,8 +614,8 @@
 
   function move(i, dir) {
     var j = i + dir;
-    if (j < 0 || j >= state.links.length) return;
-    var t = state.links[i]; state.links[i] = state.links[j]; state.links[j] = t;
+    if (j < 0 || j >= curLinks().length) return;
+    var t = curLinks()[i]; curLinks()[i] = curLinks()[j]; curLinks()[j] = t;
     changed();
   }
 
@@ -611,7 +675,8 @@
 
   function start() {
     $('adminlink').addEventListener('click', adminEntry);
-    loadPublic();
+    window.addEventListener('hashchange', function () { readHash(); renderAll(); });
+    loadPublic().then(function () { readHash(); renderAll(); });
   }
 
   if (typeof document !== 'undefined' && document.getElementById('list')) {

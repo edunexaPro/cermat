@@ -589,3 +589,46 @@ body:not(.is-admin) .toast { bottom: calc(24px + env(safe-area-inset-bottom, 0px
 @media (min-width: 480px) and (max-width: 879px) {
   .partners { --s: .8; }
 }
+
+/* ---------- Tab peran: Fasilitator / Sekolah Binaan ---------- */
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--line);
+}
+.tab {
+  flex: 1;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.tab:hover { color: var(--ink); }
+.tab.on { background: var(--primary); color: var(--primary-ink); box-shadow: 0 4px 12px rgba(20, 48, 107, .22); }
+.tab:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+@media (min-width: 880px) and (max-height: 680px) {
+  .tab { min-height: 36px; }
+  .tabs { padding: 3px; }
+}
+@media (prefers-reduced-motion: reduce) { .tab { transition: none; } }
+
+/* Layar pendek + tab: rapatkan lagi agar tetap satu layar */
+@media (min-width: 880px) and (max-height: 680px) {
+  .partners { --s: .86; padding: 6px 16px; }
+  .hero { padding: calc(7px + env(safe-area-inset-top, 0px)) 0 10px; }
+  .col { padding-bottom: 20px; }
+  .label { display: none; }
+  .card { min-height: 54px; padding: 6px 16px; }
+  .chipicon { width: 36px; height: 36px; }
+  .tab { min-height: 34px; }
+}
