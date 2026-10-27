@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#14306B">
+  <meta name="description" content="Pustaka Digital CERMAT (Cerdas Numerasi dan Matematika Terapan): akses materi dan berkas program lewat Google Drive.">
+  <title>Pustaka Digital CERMAT</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="hero"><div class="gutter"><span class="kicker" id="kicker">Portal Berkas Digital</span></div></div>
+
+  <main class="col gutter">
+    <header class="brand">
+      <div class="logo-card"><img src="assets/logo.png" width="150" height="167" alt="Logo CERMAT, Cerdas Numerasi dan Matematika Terapan"></div>
+      <h1 id="title">Pustaka Digital CERMAT</h1>
+      <p class="sub" id="subtitle">Akses seluruh materi dan berkas program CERMAT dengan satu ketukan. Pilih folder untuk membukanya di Google Drive.</p>
+      <div class="rule" aria-hidden="true"><i></i><b></b><i></i></div>
+    </header>
+
+    <div class="notice" id="notice" role="status" hidden></div>
+
+    <div class="label">Folder Utama</div>
+    <div id="list" aria-live="polite">
+      <noscript><div class="empty-note">Halaman ini memerlukan JavaScript untuk menampilkan daftar folder. Aktifkan JavaScript lalu muat ulang.</div></noscript>
+    </div>
+
+    <div id="addwrap"></div>
+
+    <footer class="foot">
+      <span class="fb">CERMAT</span>
+      <span>Cerdas Numerasi dan Matematika Terapan</span>
+      <span>Tautan terbuka di tab baru dan mengikuti izin akses Google Drive Anda.</span>
+      <button type="button" class="adminlink" id="adminlink">Admin</button>
+    </footer>
+  </main>
+
+  <div id="adminbar" class="adminbar" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
