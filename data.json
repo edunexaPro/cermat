@@ -6,10 +6,50 @@
     "announcement": ""
   },
   "links": [
-    { "title": "Silabus dan Modul", "desc": "Silabus dan modul pembelajaran", "url": "", "icon": "materi", "access": "publik", "primary": false, "hidden": false },
-    { "title": "Lembar Kerja", "desc": "Lembar kerja peserta", "url": "", "icon": "template", "access": "publik", "primary": false, "hidden": false },
-    { "title": "Bahan Tayang", "desc": "Slide dan bahan presentasi", "url": "", "icon": "tayang", "access": "publik", "primary": false, "hidden": false },
-    { "title": "Upload Foto", "desc": "Unggah foto kegiatan", "url": "", "icon": "foto", "access": "publik", "primary": false, "hidden": false },
-    { "title": "Laporan Fasil", "desc": "Laporan kegiatan", "url": "", "icon": "laporan", "access": "terbatas", "primary": false, "hidden": false }
+    {
+      "title": "Silabus dan Modul",
+      "desc": "Silabus dan modul pembelajaran",
+      "url": "",
+      "icon": "materi",
+      "access": "publik",
+      "primary": false,
+      "hidden": false
+    },
+    {
+      "title": "Bahan Tayang",
+      "desc": "Slide dan bahan presentasi",
+      "url": "",
+      "icon": "tayang",
+      "access": "publik",
+      "primary": false,
+      "hidden": false
+    },
+    {
+      "title": "Lembar Kerja",
+      "desc": "Lembar kerja peserta",
+      "url": "",
+      "icon": "template",
+      "access": "publik",
+      "primary": false,
+      "hidden": false
+    },
+    {
+      "title": "Upload Foto",
+      "desc": "Unggah foto kegiatan",
+      "url": "",
+      "icon": "foto",
+      "access": "publik",
+      "primary": false,
+      "hidden": false
+    },
+    {
+      "title": "Laporan Fasil",
+      "desc": "Laporan kegiatan",
+      "url": "",
+      "icon": "laporan",
+      "access": "terbatas",
+      "primary": false,
+      "hidden": false
+    }
   ]
 }
