@@ -580,3 +580,12 @@ body:not(.is-admin) .toast { bottom: calc(24px + env(safe-area-inset-bottom, 0px
   .hero { height: auto; min-height: 0; padding-bottom: 150px; }
   .col { margin-top: -128px; }
 }
+
+/* ---------- Empat logo di strip atas ---------- */
+.partners .p-pbg { height: calc(44px * var(--s)); }
+@media (max-width: 479px) {
+  .partners { --s: .64; padding: 8px 10px; }
+}
+@media (min-width: 480px) and (max-width: 879px) {
+  .partners { --s: .8; }
+}
