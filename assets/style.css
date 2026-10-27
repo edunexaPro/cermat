@@ -456,3 +456,39 @@ body:not(.is-admin) .toast { bottom: calc(24px + env(safe-area-inset-bottom, 0px
 .chk input { width: 20px; height: 20px; accent-color: var(--primary); flex: none; }
 .ferr { padding: 10px 12px; border-radius: 10px; background: #FDECEA; color: #8C1D18; font-size: 13px; line-height: 1.5; }
 @media (prefers-color-scheme: dark) { .ferr { background: #4A1512; color: #FFDAD6; } }
+
+/* ---------- Layar lebar: dua kolom, muat satu layar ---------- */
+
+@media (min-width: 880px) {
+  .hero {
+    height: calc(60px + env(safe-area-inset-top, 0px));
+    padding-top: calc(22px + env(safe-area-inset-top, 0px));
+  }
+  .col {
+    display: grid;
+    grid-template-columns: 400px minmax(0, 1fr);
+    column-gap: 64px;
+    row-gap: 12px;
+    align-content: center;
+    align-items: start;
+    max-width: 1040px;
+    min-height: calc(100vh - 64px);
+    margin: 0 auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .brand { grid-column: 1; grid-row: 1 / span 6; align-self: center; gap: 10px; }
+  .col > :not(.brand) { grid-column: 2; }
+  .logo-card { width: 170px; padding: 16px 14px 12px; border-radius: 24px; }
+  .logo-card img { width: 135px; }
+  h1 { margin-top: 8px; font-size: 32px; }
+  .sub { font-size: 13.5px; line-height: 1.6; }
+  .label { margin-top: 0; }
+  #list { gap: 10px; }
+  .card { min-height: 64px; padding: 10px 16px; }
+  .chipicon { width: 42px; height: 42px; }
+  .card.primary { margin-top: 4px; min-height: 58px; }
+  .skel { height: 64px; }
+  .foot { margin-top: 8px; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 4px 12px; font-size: 11.5px; }
+  .foot span:last-of-type { display: none; }
+}
